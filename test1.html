@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UG Kids Lab Overview</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --peach: #FFDAB9;
+            --peach-light: #FFF5EB;
+            --lavender: #E6E6FA;
+            --lavender-light: #F5F5FF;
+            --sky: #BAE1FF;
+            --sky-light: #EBF7FF;
+            --mint: #BFFCC6;
+            --mint-light: #EDFFF0;
+            --charcoal: #1f2937;
+            --charcoal-light: #4b5563;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.5);
+            --border: rgba(255, 255, 255, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #fdfbfb;
+            color: var(--charcoal);
+            overflow-x: hidden;
+            line-height: 1.7;
+            cursor: none;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        p {
+            font-size: 1.1rem;
+            color: var(--charcoal-light);
+        }
+
+        /* --- Custom Liquid Cursor --- */
+        #cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--charcoal);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+        }
+
+        #cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1.5px solid var(--charcoal);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.15s ease-out, background 0.3s, border-color 0.3s;
+        }
+
+        /* --- Background Elements --- */
+        .blob-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.4;
+            border-radius: 50%;
+        }
+
+        /* --- Navigation --- */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 5vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            background: rgba(253, 251, 251, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        nav img {
+            height: 45px;
+        }
+
+        /* --- Layout Sections --- */
+        section {
+            padding: 5vw 10vw;
+            position: relative;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 3rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.03);
+        }
+
+        /* --- Header Section --- */
+        header {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .expertise-badge {
+            background: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            color: #7c3aed;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5.5vw, 4rem);
+            line-height: 1.15;
+            max-width: 900px;
+            margin-bottom: 1rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            max-width: 750px;
+            margin-bottom: 3rem;
+            color: var(--charcoal-light);
+        }
+
+        /* --- Stats Banner --- */
+        .stats-banner {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--charcoal);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--charcoal-light);
+            margin-top: 0.3rem;
+        }
+
+        /* --- Section Headers --- */
+        .section-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-header h2 {
+            font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+            margin-bottom: 0.8rem;
+        }
+
+        .section-header p {
+            max-width: 700px;
+        }
+
+        .section-header.center {
+            text-align: center;
+        }
+
+        .section-header.center p {
+            margin: 0 auto;
+        }
+
+        /* --- Content Prose --- */
+        .prose {
+            max-width: 800px;
+        }
+
+        .prose p {
+            margin-bottom: 1.5rem;
+        }
+
+        .prose.center {
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        /* --- Grid Layouts --- */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .grid-5 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* --- Cards --- */
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+        }
+
+        .card h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1.15rem;
+            margin-bottom: 0.8rem;
+            color: var(--charcoal);
+        }
+
+        .card p {
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .card.accent-peach { border-top: 4px solid var(--peach); }
+        .card.accent-lavender { border-top: 4px solid var(--lavender); }
+        .card.accent-sky { border-top: 4px solid var(--sky); }
+        .card.accent-mint { border-top: 4px solid var(--mint); }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .card-icon.peach { background: var(--peach-light); color: #c2410c; }
+        .card-icon.lavender { background: var(--lavender-light); color: #6d28d9; }
+        .card-icon.sky { background: var(--sky-light); color: #0369a1; }
+        .card-icon.mint { background: var(--mint-light); color: #15803d; }
+
+        /* --- Testing Methods --- */
+        .testing-card {
+            background: white;
+            padding: 1.8rem;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            transition: transform 0.3s ease;
+        }
+
+        .testing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .testing-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+
+        .testing-card h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .testing-card p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* --- Data Focus Areas --- */
+        .focus-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 20px;
+            margin-bottom: 1rem;
+        }
+
+        .focus-bullet {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .focus-item h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .focus-item p {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* --- Two Column Layout --- */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        /* --- Highlight Box --- */
+        .highlight-box {
+            background: linear-gradient(135deg, var(--peach-light), var(--lavender-light));
+            padding: 2rem 2.5rem;
+            border-radius: 24px;
+            margin-top: 2rem;
+        }
+
+        .highlight-box h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .highlight-box p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        /* --- Footer --- */
+        footer {
+            padding: 4rem 10vw;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        footer img {
+            height: 50px;
+            opacity: 0.6;
+        }
+
+        footer p {
+            margin-top: 1.5rem;
+            opacity: 0.5;
+            font-size: 0.85rem;
+        }
+
+        /* --- Responsive --- */
+        @media (max-width: 900px) {
+            section {
+                padding: 10vw 5vw;
+            }
+
+            .two-col,
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            nav {
+                padding: 1rem 5vw;
+            }
+
+            nav img {
+                height: 35px;
+            }
+
+            h1 {
+                font-size: 2.2rem;
+            }
+
+            .stats-banner {
+                gap: 2rem;
+            }
+
+            .stat-number {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Liquid Cursor -->
+    <div id="cursor-dot"></div>
+    <div id="cursor-follower"></div>
+
+    <!-- Background Canvas -->
+    <div class="blob-container">
+        <div class="blob" style="width: 60vw; height: 60vw; background: var(--peach); top: -20%; right: -10%;"></div>
+        <div class="blob" style="width: 50vw; height: 50vw; background: var(--lavender); bottom: 10%; left: -15%;"></div>
+        <div class="blob" style="width: 40vw; height: 40vw; background: var(--mint); top: 50%; left: 5%;"></div>
+        <div class="blob" style="width: 35vw; height: 35vw; background: var(--sky); top: 70%; right: 10%;"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <img src="ug-logo.png" alt="UG Labs" onerror="this.src='https://via.placeholder.com/150x50/fdfbfb/1f2937?text=UG+LABS'">
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header id="hero">
+        <div class="expertise-badge">Research & Data</div>
+        <h1 id="hero-title">UG Kids Lab Overview</h1>
+        <p class="hero-subtitle">Key aspects of the UG Kids Lab program, its research foundations, testing methodology, and data architecture.</p>
+        
+        <div class="stats-banner">
+            <div class="stat-item">
+                <div class="stat-number">4,000+</div>
+                <div class="stat-label">Sessions Collected</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Countries</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">1000s</div>
+                <div class="stat-label">Hours of Data</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- PURPOSE & VISION -->
+    <section id="purpose">
+        <div class="glass-card">
+            <div class="section-header">
+                <h2>Purpose & Vision</h2>
+            </div>
+            <div class="prose">
+                <p>Conversational AI for children is a fundamentally new style of play. There's no existing playbook — no decades of research on how kids interact with AI characters, how they test boundaries, how they build (or lose) trust with a synthetic voice. The only way to build something that actually works is to build it with kids.</p>
+                <p>The Kids Lab exists because assumptions fail. What adults think children will say, how they think children will react, what they think will hold attention — it's almost always wrong. Real children mumble, interrupt, invent words, get distracted, push limits, and surprise you. You can't design for that in a vacuum.</p>
+                <p>We answer UX questions. We collect data. And we ensure that data is annotated to reinforce our system's learning.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- UX QUESTIONS -->
+    <section id="ux-questions">
+        <div class="section-header">
+            <h2>The Core UX Question</h2>
+        </div>
+        
+        <div class="glass-card" style="text-align:center;padding:3rem 4rem;">
+            <p style="font-size:1.4rem;font-style:italic;color:var(--charcoal);max-width:800px;margin:0 auto;">
+                "What does an interactive child–AI interaction look like, and what are the key components and obstacles from a UX and technical capabilities perspective?"
+            </p>
+        </div>
+
+        <div class="section-header" style="margin-top:3rem;">
+            <h2>UX Research Areas</h2>
+            <p>The domains we explore to answer that question</p>
+        </div>
+
+        <div class="grid-2" style="margin-top:2rem;">
+            <div class="card accent-peach">
+                <div class="card-icon peach">
+                    <i data-lucide="mic" style="width:24px;height:24px;"></i>
+                </div>
+                <h4>Voice UX</h4>
+                <p>How children speak to AI — tone, pacing, vocabulary, and the unique acoustic patterns of young voices in real environments.</p>
+            </div>
+            <div class="card accent-lavender">
+                <div class="card-icon lavender">
+                    <i data-lucide="message-circle" style="width:24px;height:24px;"></i>
+                </div>
+                <h4>Conversational UX</h4>
+                <p>Turn-taking, interruption handling, topic shifts, and how children expect dialogue to flow versus how adults design it.</p>
+            </div>
+            <div class="card accent-mint">
+                <div class="card-icon mint">
+                    <i data-lucide="shield-check" style="width:24px;height:24px;"></i>
+                </div>
+                <h4>Responsible AI Design</h4>
+                <p>Age-appropriate responses, safety boundaries, and building trust without manipulation or dark patterns.</p>
+            </div>
+            <div class="card accent-sky">
+                <div class="card-icon sky">
+                    <i data-lucide="lock-open" style="width:24px;height:24px;"></i>
+                </div>
+                <h4>Open vs. Limited Conversations</h4>
+                <p>When to let children explore freely versus when to guide them within structured boundaries — and how to transition between modes.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DATA COLLECTION -->
+    <section id="data-collection">
+        <div class="section-header">
+            <h2>What We Collect</h2>
+            <p>Data that trains and improves our systems across three critical domains</p>
+        </div>
+
+        <div class="two-col">
+            <div>
+                <div class="focus-item">
+                    <div class="focus-bullet" style="background:var(--peach);"></div>
+                    <div>
+                        <h4>ASR (Automatic Speech Recognition)</h4>
+                        <p>Child voice data across modalities, hardware types, ages, accents, and language abilities. Off-the-shelf ASR fails with children — we build the training data to fix that.</p>
+                    </div>
+                </div>
+                <div class="focus-item">
+                    <div class="focus-bullet" style="background:var(--mint);"></div>
+                    <div>
+                        <h4>Safety — Parents and Kids</h4>
+                        <p>Real examples of boundary-testing, sensitive disclosures, and edge cases. What children actually say when they push limits, and how parents respond.</p>
+                    </div>
+                </div>
+                <div class="focus-item">
+                    <div class="focus-bullet" style="background:var(--lavender);"></div>
+                    <div>
+                        <h4>Conversational Design</h4>
+                        <p>Dialogue patterns, engagement signals, confusion markers, and the moments where interactions succeed or fail.</p>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="highlight-box">
+                    <h4>Why This Data Matters</h4>
+                    <p>Every session is annotated to reinforce system learning. We don't just collect data — we label it, categorize it, and feed it back into our models to continuously improve accuracy, safety, and engagement.</p>
+                </div>
+                <div class="highlight-box" style="background:linear-gradient(135deg, var(--mint-light), var(--sky-light));margin-top:1rem;">
+                    <h4>Demographic Coverage</h4>
+                    <p>3 countries with a large range of accents and demographic backgrounds. This isn't lab data from one school in one city — it's real diversity.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW WE TEST -->
+    <section id="testing">
+        <div class="section-header center">
+            <h2>How We Test & Gather Data</h2>
+            <p>Five distinct methodologies to capture the full range of child-AI interactions</p>
+        </div>
+
+        <div class="grid-5" style="margin-top:2rem;">
+            <div class="testing-card">
+                <div class="testing-icon" style="background:var(--peach-light);">🧙</div>
+                <h4>WOO</h4>
+                <p>Wizard of Oz testing — human-in-the-loop simulations</p>
+            </div>
+            <div class="testing-card">
+                <div class="testing-icon" style="background:var(--lavender-light);">🤖</div>
+                <h4>MOO</h4>
+                <p>Model of Oz — AI-driven with human oversight</p>
+            </div>
+            <div class="testing-card">
+                <div class="testing-icon" style="background:var(--mint-light);">🏠</div>
+                <h4>Home Play</h4>
+                <p>Natural environment testing in family settings</p>
+            </div>
+            <div class="testing-card">
+                <div class="testing-icon" style="background:var(--sky-light);">📱</div>
+                <h4>Remote App Testing</h4>
+                <p>Applause-style distributed testing at scale</p>
+            </div>
+            <div class="testing-card">
+                <div class="testing-icon" style="background:linear-gradient(135deg, var(--peach-light), var(--lavender-light));">🏫</div>
+                <h4>Daycares & Schools</h4>
+                <p>Structured group settings with diverse participants</p>
+            </div>
+        </div>
+
+        <div class="glass-card" style="margin-top:3rem;text-align:center;">
+            <p style="font-size:1.15rem;color:var(--charcoal);margin:0;">Each method captures different interaction patterns — from controlled experiments to messy real-world chaos. Combined, they give us the complete picture of how children actually engage with AI.</p>
+        </div>
+    </section>
+
+    <!-- THE NUMBERS -->
+    <section id="numbers">
+        <div class="section-header center">
+            <h2>The Numbers</h2>
+        </div>
+
+        <div class="grid-3" style="max-width:900px;margin:2rem auto 0;">
+            <div class="card" style="text-align:center;padding:2.5rem;">
+                <div class="stat-number" style="font-size:3.5rem;color:#7c3aed;">4,000+</div>
+                <div class="stat-label" style="font-size:1rem;margin-top:0.5rem;">Sessions Collected</div>
+            </div>
+            <div class="card" style="text-align:center;padding:2.5rem;">
+                <div class="stat-number" style="font-size:3.5rem;color:#0891b2;">3</div>
+                <div class="stat-label" style="font-size:1rem;margin-top:0.5rem;">Countries</div>
+            </div>
+            <div class="card" style="text-align:center;padding:2.5rem;">
+                <div class="stat-number" style="font-size:3.5rem;color:#059669;">1000s</div>
+                <div class="stat-label" style="font-size:1rem;margin-top:0.5rem;">Hours of Data</div>
+            </div>
+        </div>
+
+        <div class="prose center" style="margin-top:3rem;">
+            <p>A large range of accents and demographic backgrounds. Real children in real environments — not scripted lab recordings. This is the foundation that makes our systems work where others fail.</p>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <img src="ug-logo.png" alt="UG Labs" onerror="this.src='https://via.placeholder.com/150x50/fdfbfb/1f2937?text=UG+LABS'">
+        <p>© 2024 UG Labs. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // 1. Initialize Icons
+        lucide.createIcons();
+
+        // 2. Liquid Cursor Logic
+        const dot = document.getElementById('cursor-dot');
+        const follower = document.getElementById('cursor-follower');
+        
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(dot, { x: e.clientX, y: e.clientY, duration: 0.1 });
+            gsap.to(follower, { x: e.clientX - 20, y: e.clientY - 20, duration: 0.3 });
+        });
+
+        // Hover effect for cursor
+        const interactives = document.querySelectorAll('a, .card, .glass-card, .testing-card, .focus-item, .highlight-box');
+        interactives.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                gsap.to(follower, { scale: 1.8, background: 'rgba(0,0,0,0.03)', borderColor: 'transparent', duration: 0.3 });
+            });
+            el.addEventListener('mouseleave', () => {
+                gsap.to(follower, { scale: 1, background: 'transparent', borderColor: 'var(--charcoal)', duration: 0.3 });
+            });
+        });
+
+        // 3. Hero Animation
+        window.onload = () => {
+            gsap.from("#hero-title", {
+                y: 50,
+                opacity: 0,
+                duration: 1.2,
+                ease: "power3.out"
+            });
+            gsap.from(".expertise-badge", {
+                scale: 0.8,
+                opacity: 0,
+                duration: 1,
+                delay: 0.3
+            });
+            gsap.from(".hero-subtitle", {
+                y: 30,
+                opacity: 0,
+                duration: 1,
+                delay: 0.5
+            });
+            gsap.from(".stats-banner .stat-item", {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                delay: 0.7,
+                stagger: 0.15
+            });
+        };
+
+        // 4. Scroll Driven Narratives
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Blob Parallax & Movement
+        gsap.to(".blob", {
+            scrollTrigger: {
+                scrub: 1
+            },
+            y: (i) => -200 * (i + 1),
+            rotation: 180,
+            scale: 1.1
+        });
+
+        // Section Reveal Transitions
+        const sections = document.querySelectorAll('section');
+        sections.forEach(section => {
+            gsap.from(section, {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 85%",
+                },
+                opacity: 0,
+                y: 30,
+                duration: 1,
+                ease: "power2.out"
+            });
+        });
+
+        // Stagger animations for grids
+        gsap.utils.toArray('.grid-2, .grid-3, .grid-5').forEach(grid => {
+            gsap.from(grid.children, {
+                scrollTrigger: {
+                    trigger: grid,
+                    start: "top 85%",
+                },
+                opacity: 0,
+                y: 20,
+                duration: 0.6,
+                stagger: 0.1,
+                ease: "power2.out"
+            });
+        });
+
+        // Focus items stagger
+        gsap.from('.focus-item', {
+            scrollTrigger: {
+                trigger: '.focus-item',
+                start: "top 85%",
+            },
+            opacity: 0,
+            x: -30,
+            duration: 0.6,
+            stagger: 0.12,
+            ease: "power2.out"
+        });
+
+        // 5. Magnetic Hero Element
+        const hero = document.getElementById('hero');
+        hero.addEventListener('mousemove', (e) => {
+            const { clientX, clientY } = e;
+            const x = (clientX / window.innerWidth - 0.5) * 20;
+            const y = (clientY / window.innerHeight - 0.5) * 20;
+            gsap.to("#hero-title", { x, y, duration: 0.6, ease: "power2.out" });
+        });
+
+        hero.addEventListener('mouseleave', () => {
+            gsap.to("#hero-title", { x: 0, y: 0, duration: 0.6, ease: "power2.out" });
+        });
+    </script>
+
+</body>
+</html>
